@@ -1,59 +1,53 @@
-﻿using System;
+﻿using HOL3.Models;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace HOL2.Controllers
+namespace HOL3.Controllers
 {
     public class HomeController : Controller
     {
-        public ActionResult Index(String id)
+        public ActionResult Index()
         {
-            if (id == null)
-            {
-                return Content("<h1> This is a demo of ContentResult</h1>");
-            }
-            else if (id.ToLower() == "plain")
-            {
-                return Content("<h1> This is ademo of ContentResult</h1>", "text/plain");
-            }
-            else if (id.ToLower() == "html")
-            {
-                return Content("<h1> This is a demo of ContentResult</h1>", "text/html");
-            }
-            else if (id.ToLower() == "xml")
-            {
-                return Content("<h1> This is a demo of ContentResult</h1>", "text/xml");
-            }
-            return Content("Invalid content type");
-           
+            ViewData["str1"] = "This is astring passed using ViewData";
+            ViewData["num1"] = 100;
+            ViewBag.str2 = "This is a string passed using ViewBag";
+            ViewBag.num2 = 200;
+            return View();
+        }
+        public ActionResult AddUser()
+        {
+            return View();
+        }
+        public ActionResult SaveUser(User u)
+        {
+            StreamWriter sw = new StreamWriter(Server.MapPath("~/App_Data/users.txt"), true);
+            sw.WriteLine("User details added on:" + DateTime.Now.ToString());
+            sw.WriteLine("User name:" + u.UserName);
+            sw.WriteLine("Password:" + u.Password);
+            sw.WriteLine();
+            sw.Close();
+            return Content("User details have been saved");
+        }
+        public ActionResult HtmlHelpers()
+        {
+            return View();
         }
 
-        public ActionResult DownloadFile()
-        {
-            if (!System.IO.File.Exists(@"e:\lighthouse.jpg"))
-            {
-                return Content("File to be downloaded not found");
-            }
-            return File(@"\lighthouse.jpg", "image/jpg", "default.jpg");
-
+       
            
-        }
-
-        public ActionResult StartPage()
-        {
-            return RedirectToAction("Index", new { id = "xml" });
 
             
-        }
-         public ActionResult Login()
-        {
-            return View();
-        }
-        public ActionResult AboutUs()
-        {
-            return View();
-        }
+        
+
+       
+        
+           
+
+    
+        
     }
 }
