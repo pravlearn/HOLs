@@ -1,53 +1,107 @@
-﻿using HOL3.Models;
+﻿using HOL4.Models;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace HOL3.Controllers
+namespace HOL4.Controllers
 {
     public class HomeController : Controller
     {
+        MyDbContext context = new MyDbContext();
         public ActionResult Index()
         {
-            ViewData["str1"] = "This is astring passed using ViewData";
-            ViewData["num1"] = 100;
-            ViewBag.str2 = "This is a string passed using ViewBag";
-            ViewBag.num2 = 200;
+            return View(context.Accounts);
+        }
+        public ActionResult Create()
+
+        {
+
+            return View();
+
+        }
+        public ActionResult CreateAccount(Account a)
+
+        {
+
+            context.Accounts.Add(a);
+
+            context.SaveChanges();
+
+            return RedirectToAction("Index");
+
+
+
+
+
+        }
+        public ActionResult Edit(int? accno)
+
+        {
+
+            var account_to_edit = (from a in context.Accounts
+
+                                   where a.AccountNumber == accno
+
+                                   select a).SingleOrDefault();
+
+            return View(account_to_edit);
+
+        }
+        public ActionResult EditAccount(Account a)
+
+        {
+
+            context.Entry<Account>(a).State = System.Data.Entity.EntityState.Modified;
+
+            context.SaveChanges();
+
+            return RedirectToAction("Index");
+
+        }
+        public ActionResult Delete(int? accno)
+
+        {
+
+            var account_to_delete = (from a in context.Accounts
+
+                                     where a.AccountNumber == accno
+
+                                     select a).SingleOrDefault();
+
+            context.Entry<Account>(account_to_delete).State =
+
+        System.Data.Entity.EntityState.Deleted;
+
+            context.SaveChanges();
+
+            return RedirectToAction("Index");
+
+        }
+        [ChildActionOnly]
+
+        public ActionResult GetNews(string category)
+
+        {
+
+            return PartialView(null, category);
+
+        }
+
+
+        public ActionResult About()
+        {
+            ViewBag.Message = "Your application description page.";
+
             return View();
         }
-        public ActionResult AddUser()
+
+        public ActionResult Contact()
         {
+            ViewBag.Message = "Your contact page.";
+
             return View();
         }
-        public ActionResult SaveUser(User u)
-        {
-            StreamWriter sw = new StreamWriter(Server.MapPath("~/App_Data/users.txt"), true);
-            sw.WriteLine("User details added on:" + DateTime.Now.ToString());
-            sw.WriteLine("User name:" + u.UserName);
-            sw.WriteLine("Password:" + u.Password);
-            sw.WriteLine();
-            sw.Close();
-            return Content("User details have been saved");
-        }
-        public ActionResult HtmlHelpers()
-        {
-            return View();
-        }
-
-       
-           
-
-            
-        
-
-       
-        
-           
-
-    
-        
     }
 }
